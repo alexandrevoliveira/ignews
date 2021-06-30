@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Link from 'next/link';
 import { RichText } from "prismic-dom";
@@ -55,9 +55,14 @@ export default function PostPreview({ post }: PostPreviewProps) {
   );
 }
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: [],
+    paths: [
+      // passar parametro para gerar determinada(s) página(s) no processo de build
+      // { params: { slug: 'saas-single-tenant-ou-multi-tenant-qual-escolher'}}
+      // nesse caso estamos passando um array vazio, pois queremos que todas os
+      // posts sejam gerados de forma estatica conforme os usuários vao acessando.
+    ],
     fallback: 'blocking'
   }
 }
@@ -83,6 +88,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return {
     props: {
       post,
-    }
+    },
+    revalidate: 60 * 30 // 30 minutes
   }
 }
